@@ -121,8 +121,8 @@ export default function CreateEventForm() {
     }
   };
 
-  // Helper Calendar Generator
-  const renderCalendar = (monthDayJs, onSelectDate, selectedDateStr) => {
+  // Helper Calendar Generator with Previous/Next Month Navigation
+  const renderCalendar = (monthDayJs, onSelectDate, selectedDateStr, onSelectMonth) => {
     const startOfMonth = monthDayJs.startOf('month');
     const daysInMonth = monthDayJs.daysInMonth();
     const startDayOfWeek = startOfMonth.day(); // 0 is Sunday
@@ -138,7 +138,8 @@ export default function CreateEventForm() {
       days.push({
         dateStr: prevMonth.date(dayNum).format('YYYY-MM-DD'),
         dayNum,
-        isCurrentMonth: false
+        isCurrentMonth: false,
+        targetMonth: prevMonth
       });
     }
 
@@ -147,7 +148,8 @@ export default function CreateEventForm() {
       days.push({
         dateStr: monthDayJs.date(d).format('YYYY-MM-DD'),
         dayNum: d,
-        isCurrentMonth: true
+        isCurrentMonth: true,
+        targetMonth: monthDayJs
       });
     }
 
@@ -159,7 +161,8 @@ export default function CreateEventForm() {
       days.push({
         dateStr: nextMonth.date(n).format('YYYY-MM-DD'),
         dayNum: n,
-        isCurrentMonth: false
+        isCurrentMonth: false,
+        targetMonth: nextMonth
       });
     }
 
@@ -169,7 +172,10 @@ export default function CreateEventForm() {
           <button 
             type="button" 
             className="datepicker-nav-btn"
-            onClick={() => onSelectMonth(monthDayJs.subtract(1, 'month'))}
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelectMonth(monthDayJs.subtract(1, 'month'));
+            }}
           >
             <ChevronLeft size={16} />
           </button>
@@ -177,7 +183,10 @@ export default function CreateEventForm() {
           <button 
             type="button" 
             className="datepicker-nav-btn"
-            onClick={() => onSelectMonth(monthDayJs.add(1, 'month'))}
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelectMonth(monthDayJs.add(1, 'month'));
+            }}
           >
             <ChevronRight size={16} />
           </button>
@@ -193,8 +202,12 @@ export default function CreateEventForm() {
               <div
                 key={idx}
                 className={`calendar-day-cell ${!item.isCurrentMonth ? 'other-month' : ''} ${isSelected ? 'selected' : ''}`}
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
                   onSelectDate(item.dateStr);
+                  if (!item.isCurrentMonth) {
+                    onSelectMonth(item.targetMonth);
+                  }
                 }}
               >
                 {item.dayNum}
@@ -205,9 +218,6 @@ export default function CreateEventForm() {
       </div>
     );
   };
-
-  const onSelectMonthStart = (m) => setCurrentStartMonth(m);
-  const onSelectMonthEnd = (m) => setCurrentEndMonth(m);
 
   const filteredProfiles = filterProfilesByQuery(profiles, profileSearch);
 
@@ -347,10 +357,15 @@ export default function CreateEventForm() {
                 </span>
               </div>
               {showStartCalendar &&
-                renderCalendar(currentStartMonth, (dStr) => {
-                  setStartDateStr(dStr);
-                  setShowStartCalendar(false);
-                }, startDateStr)}
+                renderCalendar(
+                  currentStartMonth,
+                  (dStr) => {
+                    setStartDateStr(dStr);
+                    setShowStartCalendar(false);
+                  },
+                  startDateStr,
+                  (newMonth) => setCurrentStartMonth(newMonth)
+                )}
             </div>
 
             <div style={{ position: 'relative' }}>
@@ -386,10 +401,15 @@ export default function CreateEventForm() {
                 </span>
               </div>
               {showEndCalendar &&
-                renderCalendar(currentEndMonth, (dStr) => {
-                  setEndDateStr(dStr);
-                  setShowEndCalendar(false);
-                }, endDateStr)}
+                renderCalendar(
+                  currentEndMonth,
+                  (dStr) => {
+                    setEndDateStr(dStr);
+                    setShowEndCalendar(false);
+                  },
+                  endDateStr,
+                  (newMonth) => setCurrentEndMonth(newMonth)
+                )}
             </div>
 
             <div>

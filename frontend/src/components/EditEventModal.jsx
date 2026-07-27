@@ -48,10 +48,16 @@ export default function EditEventModal({ event, onClose }) {
       const startExtracted = extractDateAndTimeInTimezone(event.startTime, tz);
       setStartDateStr(startExtracted.dateStr);
       setStartTimeStr(startExtracted.timeStr);
+      if (startExtracted.dateStr) {
+        setCurrentStartMonth(dayjs(startExtracted.dateStr));
+      }
 
       const endExtracted = extractDateAndTimeInTimezone(event.endTime, tz);
       setEndDateStr(endExtracted.dateStr);
       setEndTimeStr(endExtracted.timeStr);
+      if (endExtracted.dateStr) {
+        setCurrentEndMonth(dayjs(endExtracted.dateStr));
+      }
     }
   }, [event]);
 
@@ -144,7 +150,8 @@ export default function EditEventModal({ event, onClose }) {
       days.push({
         dateStr: prevMonth.date(dayNum).format('YYYY-MM-DD'),
         dayNum,
-        isCurrentMonth: false
+        isCurrentMonth: false,
+        targetMonth: prevMonth
       });
     }
 
@@ -152,7 +159,8 @@ export default function EditEventModal({ event, onClose }) {
       days.push({
         dateStr: monthDayJs.date(d).format('YYYY-MM-DD'),
         dayNum: d,
-        isCurrentMonth: true
+        isCurrentMonth: true,
+        targetMonth: monthDayJs
       });
     }
 
@@ -163,7 +171,8 @@ export default function EditEventModal({ event, onClose }) {
       days.push({
         dateStr: nextMonth.date(n).format('YYYY-MM-DD'),
         dayNum: n,
-        isCurrentMonth: false
+        isCurrentMonth: false,
+        targetMonth: nextMonth
       });
     }
 
@@ -173,7 +182,10 @@ export default function EditEventModal({ event, onClose }) {
           <button 
             type="button" 
             className="datepicker-nav-btn"
-            onClick={() => onSelectMonth(monthDayJs.subtract(1, 'month'))}
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelectMonth(monthDayJs.subtract(1, 'month'));
+            }}
           >
             <ChevronLeft size={16} />
           </button>
@@ -181,7 +193,10 @@ export default function EditEventModal({ event, onClose }) {
           <button 
             type="button" 
             className="datepicker-nav-btn"
-            onClick={() => onSelectMonth(monthDayJs.add(1, 'month'))}
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelectMonth(monthDayJs.add(1, 'month'));
+            }}
           >
             <ChevronRight size={16} />
           </button>
@@ -197,7 +212,13 @@ export default function EditEventModal({ event, onClose }) {
               <div
                 key={idx}
                 className={`calendar-day-cell ${!item.isCurrentMonth ? 'other-month' : ''} ${isSelected ? 'selected' : ''}`}
-                onClick={() => onSelectDate(item.dateStr)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSelectDate(item.dateStr);
+                  if (!item.isCurrentMonth) {
+                    onSelectMonth(item.targetMonth);
+                  }
+                }}
               >
                 {item.dayNum}
               </div>
@@ -359,7 +380,7 @@ export default function EditEventModal({ event, onClose }) {
                         setShowStartCalendar(false);
                       },
                       startDateStr,
-                      setCurrentStartMonth
+                      (newMonth) => setCurrentStartMonth(newMonth)
                     )}
                 </div>
 
@@ -403,7 +424,7 @@ export default function EditEventModal({ event, onClose }) {
                         setShowEndCalendar(false);
                       },
                       endDateStr,
-                      setCurrentEndMonth
+                      (newMonth) => setCurrentEndMonth(newMonth)
                     )}
                 </div>
 
