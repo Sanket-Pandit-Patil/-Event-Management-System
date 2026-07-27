@@ -4,6 +4,7 @@ import { useEventStore } from '../store/eventStore';
 import { TIMEZONES, extractDateAndTimeInTimezone, combineDateAndTimeToUTC } from '../utils/timezone';
 import { filterProfilesByQuery } from '../utils/dsa';
 import { X, ChevronDown, Calendar, Plus, Search, Check, ChevronLeft, ChevronRight } from 'lucide-react';
+import TimePicker from './TimePicker';
 import dayjs from 'dayjs';
 
 export default function EditEventModal({ event, onClose }) {
@@ -231,15 +232,6 @@ export default function EditEventModal({ event, onClose }) {
 
   const filteredProfiles = filterProfilesByQuery(profiles, profileSearch);
 
-  const timeSlots = [];
-  for (let h = 0; h < 24; h++) {
-    for (let m of [0, 30]) {
-      const hh = String(h).padStart(2, '0');
-      const mm = String(m).padStart(2, '0');
-      timeSlots.push(`${hh}:${mm}`);
-    }
-  }
-
   return (
     <div className="modal-overlay">
       <div className="modal-content">
@@ -385,17 +377,7 @@ export default function EditEventModal({ event, onClose }) {
                 </div>
 
                 <div>
-                  <select
-                    className="time-select-input"
-                    value={startTimeStr}
-                    onChange={(e) => setStartTimeStr(e.target.value)}
-                  >
-                    {timeSlots.map((ts) => (
-                      <option key={ts} value={ts}>
-                        {dayjs(`2000-01-01 ${ts}`).format('hh:mm A')}
-                      </option>
-                    ))}
-                  </select>
+                  <TimePicker value={startTimeStr} onChange={setStartTimeStr} />
                 </div>
               </div>
             </div>
@@ -429,17 +411,7 @@ export default function EditEventModal({ event, onClose }) {
                 </div>
 
                 <div>
-                  <select
-                    className="time-select-input"
-                    value={endTimeStr}
-                    onChange={(e) => setEndTimeStr(e.target.value)}
-                  >
-                    {timeSlots.map((ts) => (
-                      <option key={ts} value={ts}>
-                        {dayjs(`2000-01-01 ${ts}`).format('hh:mm A')}
-                      </option>
-                    ))}
-                  </select>
+                  <TimePicker value={endTimeStr} onChange={setEndTimeStr} />
                 </div>
               </div>
             </div>

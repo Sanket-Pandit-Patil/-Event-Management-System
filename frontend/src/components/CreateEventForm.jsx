@@ -3,7 +3,8 @@ import { useProfileStore } from '../store/profileStore';
 import { useEventStore } from '../store/eventStore';
 import { TIMEZONES, combineDateAndTimeToUTC } from '../utils/timezone';
 import { filterProfilesByQuery } from '../utils/dsa';
-import { ChevronDown, Calendar, Clock, Plus, Search, Check, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronDown, Calendar, Plus, Search, Check, ChevronLeft, ChevronRight } from 'lucide-react';
+import TimePicker from './TimePicker';
 import dayjs from 'dayjs';
 
 export default function CreateEventForm() {
@@ -121,18 +122,16 @@ export default function CreateEventForm() {
     }
   };
 
-  // Helper Calendar Generator with Previous/Next Month Navigation
   const renderCalendar = (monthDayJs, onSelectDate, selectedDateStr, onSelectMonth) => {
     const startOfMonth = monthDayJs.startOf('month');
     const daysInMonth = monthDayJs.daysInMonth();
-    const startDayOfWeek = startOfMonth.day(); // 0 is Sunday
+    const startDayOfWeek = startOfMonth.day();
 
     const prevMonth = monthDayJs.subtract(1, 'month');
     const prevMonthDays = prevMonth.daysInMonth();
 
     const days = [];
 
-    // Previous month padding days
     for (let i = startDayOfWeek - 1; i >= 0; i--) {
       const dayNum = prevMonthDays - i;
       days.push({
@@ -143,7 +142,6 @@ export default function CreateEventForm() {
       });
     }
 
-    // Current month days
     for (let d = 1; d <= daysInMonth; d++) {
       days.push({
         dateStr: monthDayJs.date(d).format('YYYY-MM-DD'),
@@ -153,7 +151,6 @@ export default function CreateEventForm() {
       });
     }
 
-    // Next month padding days to fill grid of 35 or 42
     const totalCells = days.length > 35 ? 42 : 35;
     const nextMonth = monthDayJs.add(1, 'month');
     const remaining = totalCells - days.length;
@@ -220,16 +217,6 @@ export default function CreateEventForm() {
   };
 
   const filteredProfiles = filterProfilesByQuery(profiles, profileSearch);
-
-  // Time slots generator (00:00 to 23:30)
-  const timeSlots = [];
-  for (let h = 0; h < 24; h++) {
-    for (let m of [0, 30]) {
-      const hh = String(h).padStart(2, '0');
-      const mm = String(m).padStart(2, '0');
-      timeSlots.push(`${hh}:${mm}`);
-    }
-  }
 
   return (
     <div className="card">
@@ -368,18 +355,8 @@ export default function CreateEventForm() {
                 )}
             </div>
 
-            <div style={{ position: 'relative' }}>
-              <select
-                className="time-select-input"
-                value={startTimeStr}
-                onChange={(e) => setStartTimeStr(e.target.value)}
-              >
-                {timeSlots.map((ts) => (
-                  <option key={ts} value={ts}>
-                    {dayjs(`2000-01-01 ${ts}`).format('hh:mm A')}
-                  </option>
-                ))}
-              </select>
+            <div>
+              <TimePicker value={startTimeStr} onChange={setStartTimeStr} />
             </div>
           </div>
         </div>
@@ -413,17 +390,7 @@ export default function CreateEventForm() {
             </div>
 
             <div>
-              <select
-                className="time-select-input"
-                value={endTimeStr}
-                onChange={(e) => setEndTimeStr(e.target.value)}
-              >
-                {timeSlots.map((ts) => (
-                  <option key={ts} value={ts}>
-                    {dayjs(`2000-01-01 ${ts}`).format('hh:mm A')}
-                  </option>
-                ))}
-              </select>
+              <TimePicker value={endTimeStr} onChange={setEndTimeStr} />
             </div>
           </div>
         </div>
