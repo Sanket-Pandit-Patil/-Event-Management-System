@@ -1,18 +1,27 @@
 import React from 'react';
-import { Users, Calendar, Clock, Edit, FileText, AlertTriangle } from 'lucide-react';
-import { formatInTimezone, formatDateOnly, formatTimeOnly } from '../utils/timezone';
+import { Users, Calendar, Clock, Edit, FileText, AlertTriangle, Hourglass } from 'lucide-react';
+import { formatInTimezone, formatDateOnly, formatTimeOnly, calculateDuration } from '../utils/timezone';
 import { useViewTimezoneStore } from '../store/viewTimezoneStore';
 
 export default function EventCard({ event, isOverlapping, onEdit, onViewLogs }) {
   const { viewTimezone } = useViewTimezoneStore();
 
   const profileNames = event.profiles ? event.profiles.map((p) => p.name).join(', ') : 'No profiles';
+  const duration = calculateDuration(event.startTime, event.endTime);
 
   return (
     <div className="event-card">
-      <div className="event-card-profiles">
-        <Users size={16} className="text-muted" />
-        <span>{profileNames}</span>
+      <div className="event-card-header">
+        <div className="event-card-profiles">
+          <Users size={16} className="text-muted" />
+          <span>{profileNames}</span>
+        </div>
+        {duration && (
+          <div className="duration-badge">
+            <Hourglass size={12} />
+            <span>{duration}</span>
+          </div>
+        )}
       </div>
 
       {isOverlapping && (

@@ -68,7 +68,7 @@ body {
 /* Profile Selector Dropdown in Header */
 .profile-selector-container {
   position: relative;
-  width: 240px;
+  width: 260px;
 }
 
 .profile-selector-btn {
@@ -243,13 +243,15 @@ body {
   padding: 10px 12px;
   border-top: 1px solid var(--border-color);
   display: flex;
+  align-items: center;
   gap: 8px;
   background-color: #FAFAFA;
 }
 
 .add-profile-inline-form input {
   flex: 1;
-  padding: 6px 10px;
+  min-width: 0;
+  padding: 8px 10px;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   font-size: 13px;
@@ -257,7 +259,7 @@ body {
 }
 
 .add-profile-inline-form button {
-  padding: 6px 14px;
+  padding: 8px 14px;
   background-color: var(--primary);
   color: #FFFFFF;
   border: none;
@@ -265,12 +267,17 @@ body {
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
+  white-space: nowrap;
+}
+
+.add-profile-inline-form button:hover {
+  background-color: var(--primary-hover);
 }
 
 /* Date & Time Selectors Row */
 .datetime-row {
   display: grid;
-  grid-template-columns: 1fr 120px;
+  grid-template-columns: 1fr 140px;
   gap: 12px;
 }
 
@@ -435,6 +442,13 @@ body {
   border-color: #D0D5DD;
 }
 
+.event-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
 .event-card-profiles {
   display: flex;
   align-items: center;
@@ -442,7 +456,18 @@ body {
   font-size: 14px;
   font-weight: 600;
   color: var(--text-main);
-  margin-bottom: 16px;
+}
+
+.duration-badge {
+  font-size: 11px;
+  font-weight: 600;
+  background-color: #F0EDFF;
+  color: var(--primary);
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .event-times-group {
@@ -535,7 +560,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  margin-top: 4px;
+  margin-bottom: 12px;
 }
 
 /* Modals */

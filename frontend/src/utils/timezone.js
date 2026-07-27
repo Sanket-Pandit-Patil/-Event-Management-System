@@ -19,13 +19,15 @@ export const TIMEZONES = [
 ];
 
 export const getTimezoneIANA = (labelOrIana) => {
+  if (!labelOrIana) return 'America/New_York';
   const found = TIMEZONES.find(
     (tz) => tz.label.toLowerCase() === labelOrIana.toLowerCase() || tz.iana.toLowerCase() === labelOrIana.toLowerCase()
   );
-  return found ? found.iana : 'America/New_York';
+  return found ? found.iana : labelOrIana;
 };
 
 export const getTimezoneLabel = (ianaOrLabel) => {
+  if (!ianaOrLabel) return 'Eastern Time (ET)';
   const found = TIMEZONES.find(
     (tz) => tz.iana.toLowerCase() === ianaOrLabel.toLowerCase() || tz.label.toLowerCase() === ianaOrLabel.toLowerCase()
   );
@@ -33,9 +35,9 @@ export const getTimezoneLabel = (ianaOrLabel) => {
 };
 
 /**
- * Format a Date object or ISO string in a target timezone
+ * Format a Date object or ISO string in a target timezone safely
  */
-export const formatInTimezone = (date, tzLabelOrIana, pattern = 'MMM DD, YYYY at hh:mm A') => {
+export const formatInTimezone = (date, tzLabelOrIana, pattern = 'MMM DD, YYYY [at] hh:mm A') => {
   if (!date) return '';
   const iana = getTimezoneIANA(tzLabelOrIana);
   return dayjs(date).tz(iana).format(pattern);
@@ -53,6 +55,29 @@ export const formatDateOnly = (date, tzLabelOrIana) => {
  */
 export const formatTimeOnly = (date, tzLabelOrIana) => {
   return formatInTimezone(date, tzLabelOrIana, 'hh:mm A');
+};
+
+/**
+ * Formats duration between start and end dates accurately across DST boundaries
+ */
+export const calculateDuration = (startTime, endTime) => {
+  if (!startTime || !endTime) return '';
+  const start = dayjs(startTime);
+  const end = dayjs(endTime);
+  const diffMinutes = end.diff(start, 'minute');
+
+  if (diffMinutes <= 0) return '0 mins';
+
+  const days = Math.floor(diffMinutes / (24 * 60));
+  const hours = Math.floor((diffMinutes % (24 * 60)) / 60);
+  const minutes = diffMinutes % 60;
+
+  const parts = [];
+  if (days > 0) parts.push(`${days} day${days > 1 ? 's' : ''}`);
+  if (hours > 0) parts.push(`${hours} hr${hours > 1 ? 's' : ''}`);
+  if (minutes > 0) parts.push(`${minutes} min${minutes > 1 ? 's' : ''}`);
+
+  return parts.join(' ');
 };
 
 /**
