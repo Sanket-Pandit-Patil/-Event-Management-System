@@ -6,9 +6,8 @@ A full-stack MERN application built to create and manage events across multiple 
 
 ## 🚀 Live Demo & Links
 
-- **Hosted Website (Frontend)**: `https://your-app.vercel.app` *(Replace with your live link)*
-- **Hosted API (Backend)**: `https://your-api.onrender.com` *(Replace with your live link)*
-- **Video Explanation**: `https://loom.com/...` *(Replace with your Loom video link)*
+- **Hosted Website (Frontend)**: `https://event-management-system-six-swart.vercel.app/`
+- **Hosted API (Backend)**: `https://event-management-backend-99rt.onrender.com` 
 
 ---
 
